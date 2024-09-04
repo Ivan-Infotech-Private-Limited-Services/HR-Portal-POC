@@ -1,0 +1,48 @@
+<div class="space-y-4 md:space-y-6 sm:p-8">
+  <div class="flex justify-between">
+    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+        Add Employee
+    </h1>
+    <span class="cursor-pointer" (click)="dialogRef.close(false)">x</span>
+  </div>
+  <form [formGroup]="form" class="space-y-4 md:space-y-6" >
+    <div class="grid md:grid-cols-2 md:gap-6">
+      <form-field  [errorControl]="form.get('hodId')" name="hod">
+        <label for="hodId" class="f-label">HOD</label>
+        <div class="f-control">
+          <ngx-select-dropdown formControlName="hodId" [options]="data?.hods" [config]="{search: true, placeholder: 'Choose One', displayKey:'fullName'}" [multiple]="false"></ngx-select-dropdown>
+        </div>
+      </form-field>
+      <form-field [errorControl]="form.get('userId')" name="user id">
+        <label for="userId" class="f-label">User ID</label>
+        <input type="text" formControlName="userId" name="userId" id="userId" placeholder="XX-XXX" class="f-control" autocomplete="off">
+      </form-field>
+      <form-field [errorControl]="form.get('firstName')" name="first name">
+        <label for="firstName" class="f-label">First Name</label>
+        <input type="text" formControlName="firstName" name="firstName" id="firstName" placeholder="eg. John" class="f-control" autocomplete="off">
+      </form-field>
+      <form-field [errorControl]="form.get('lastName')" name="last name">
+        <label for="lastName" class="f-label">Last Name</label>
+        <input type="text" formControlName="lastName" name="lastName" id="lastName" placeholder="eg. Doe" class="f-control" autocomplete="off">
+      </form-field>
+      <form-field [errorControl]="form.get('incentiveRate')" name="incentive rate">
+        <label for="incentiveRate" class="f-label">Incentive Rate/Hour</label>
+        <input type="text" formControlName="incentiveRate" name="incentiveRate" id="incentiveRate" placeholder="₹0.00" class="f-control" autocomplete="off">
+      </form-field>
+      <form-field [errorControl]="form.get('wageRate')" name="incentive rate">
+        <label for="wageRate" class="f-label">Wages/Day</label>
+        <input (change)="calculateWages($event)" type="text" formControlName="wageRate" name="wageRate" id="wageRate" placeholder="₹0.00" class="f-control" autocomplete="off">
+      </form-field>
+    </div>
+ 
+    <div class="grid md:grid-cols-3 md:gap-6">
+      <label class="block mb-2 text-md font-medium text-gray-900">Basic (40%): ₹{{earningHeads.basic || '0.00'}}</label>
+      <label class="block mb-2 text-md font-medium text-gray-900">HRA (30%): ₹{{earningHeads.hra || '0.00'}}</label>
+      <label class="block mb-2 text-md font-medium text-gray-900">CA (30%): ₹{{earningHeads.ca || '0.00'}}</label>
+    </div>
+
+    <div class="text-center">
+      <button type="button" (click)="create()" class="w-60 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 focus:outline-none cursor-pointer">Create Employee</button>
+    </div>
+  </form>
+</div>
