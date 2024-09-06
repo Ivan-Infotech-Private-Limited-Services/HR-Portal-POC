@@ -1,0 +1,37 @@
+.active {
+  background: #1d4ed8;
+  color: #ffffff;
+  &:hover {
+    background: #1d4ed8;
+    color: #ffffff;
+  }
+  svg {
+    color: #ffffff;
+  }
+}
+
+.sub-active {
+  color: #1d4ed8 ;
+}
+
+.menu-item-parent {
+  position: relative;
+
+  .menu-item-child {
+    max-height: 0; // Initially hide the child menu by collapsing the height
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+    // Smooth sliding from height 0
+    li {
+      padding: 0;
+    }
+  }
+
+  &:hover .menu-item-child {
+    max-height: 200px; // Set a maximum height to expand (adjust based on content height)
+    opacity: 1;
+    visibility: visible;
+  }
+}

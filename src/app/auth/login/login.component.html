@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
       <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900">
           <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
-          HR Portal    
+          HR Portal POC   
       </a>
       <div class="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -12,11 +12,11 @@
               <form [formGroup]="form" class="space-y-4 md:space-y-6" action="#">
                 <form-field [errorControl]="form.get('corpId')" name="corporate ID">
                   <label for="email" class="f-label">Corporate ID</label>
-                  <input type="email" formControlName="corpId" name="corporate ID" id="corpId" placeholder="Admin@123" class="f-control" autocomplete="off">
+                  <input type="email" formControlName="corpId" name="corporate ID" id="corpId" placeholder="Ivan" class="f-control" autocomplete="off">
                 </form-field>
                 <form-field [errorControl]="form.get('userId')" name="user ID">
                   <label for="email" class="f-label">User ID</label>
-                  <input type="email" formControlName="userId" name="user ID" id="userId" placeholder="User@123" class="f-control" autocomplete="off">
+                  <input type="email" formControlName="userId" name="user ID" id="userId" placeholder="Admin" class="f-control" autocomplete="off">
                 </form-field>
                 <form-field [errorControl]="form.get('password')" name="password">
                   <label for="password" class="f-label">Password</label>

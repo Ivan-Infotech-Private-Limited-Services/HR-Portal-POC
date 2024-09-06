@@ -3,6 +3,10 @@ const { login } = require("../controllers/auths");
 
 const router = Router();
 
-router.post("/login", login);
+try {
+    router.post("/login", login);
+} catch (e) {
+    throw e
+}
 
 module.exports = router;

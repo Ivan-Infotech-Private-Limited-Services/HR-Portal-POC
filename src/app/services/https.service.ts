@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 })
 export class HttpsService {
   readonly BASE_URL: string = environment.apiUrl;
-  readonly BASE_HREF: string = environment.BASEHREF;
+  // readonly BASE_HREF: string = environment.BASEHREF;
   constructor(private http: HttpClient) {}
 
   get(url:string, query: any): any {
@@ -17,11 +17,7 @@ export class HttpsService {
 
   async post(url: string, payload: any) {
     return await firstValueFrom(
-      this.http.post<any>(`${this.BASE_URL}/${url}`, payload, {
-        headers:{
-          'Content-Type': 'application/json'
-        }
-      })
+      this.http.post<any>(`${this.BASE_URL}/${url}`, payload)
     ).then((response: any) => {
         if (response?.status !== 'success') {
           if (response?.val_msg) {
@@ -48,6 +44,14 @@ export class HttpsService {
         return response;
       })
       .catch(this.handleError);
+  }
+
+  postFormData(url: string, payload: any) {
+    var formData = new FormData();
+    for (var key in payload) {
+      formData.append(key, payload[key]);
+    }
+    return this.post(url, formData);
   }
 
   private handleError(error: any): Promise<any> {
@@ -77,5 +81,9 @@ export class HttpsService {
     //   window.location.href = '/';
     // }
     return Promise.reject<string>(error.message || error);
+  }
+
+  blob(url: string, payload: Object = {}) {
+    return firstValueFrom(this.http.post(`${this.BASE_URL}/${url}`, payload, { responseType: 'blob', observe: 'response' }));
   }
 }

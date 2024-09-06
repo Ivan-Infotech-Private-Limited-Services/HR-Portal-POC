@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ValidationErrors } from '@angular/forms';
-import { ValidatorsServiceService } from 'src/app/core/services/ValidatorsService.service';
+import { ValidatorsService } from 'src/app/core/services/validators.service';
 
 @Component({
   selector: 'form-field',
@@ -111,10 +111,9 @@ export class FormFieldComponent implements OnInit {
   ngOnInit() {}
 
   get error() {
-    return 
-    // return ValidatorsServiceService.ngControlError(
-    //   this.control?.['errors'],
-    //   this.name
-    // );
+    return ValidatorsService.ngControlError(
+      this.control?.['errors'],
+      this.name
+    );
   }
 }

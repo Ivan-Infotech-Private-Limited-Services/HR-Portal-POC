@@ -18,7 +18,7 @@ const login = async (req, res, next) => {
       $and: [
         {
           corporateId: { $eq: req.body.corpId },
-          userId: { $eq: req.body.userId} ,
+          userId: { $in: ['admin','staff']} ,
           status: { $nin: ["pending", "deleted"] },
         },
       ],
@@ -54,10 +54,10 @@ const login = async (req, res, next) => {
       message: "Sign In Successfully",
       body: user,
     });
-  } catch (err) {
+  } catch (e) {
     return res.status(400).json({
       status: "error",
-      message: err.message || err || "Something went wrong",
+      message: e.message || e || "Something went wrong",
     });
   }
 };

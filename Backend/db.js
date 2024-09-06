@@ -7,7 +7,7 @@ module.exports.connect = async() => {
     
     await mongoose.connect(`mongodb://localhost:${port}/${dbName}`).then(connected =>{
         console.log("database connected on port", port);
-    }).catch(err =>{
-        console.log(err);
+    }).catch(e =>{
+        console.log(e);
     })
 }

@@ -21,4 +21,18 @@ export class UsersService {
       throw e
     }
   }
+  async getById(userId:any){
+    try {
+      return await this.httpService.get(`users/${userId}`,{})
+    } catch (e) {
+      throw e
+    }
+  }
+  async update(userId:string, body:any){
+    try {
+      return await this.httpService.post(`users/update/${userId}`, body)
+    } catch (e) {
+      throw e
+    }
+  }
 }

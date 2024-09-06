@@ -31,10 +31,10 @@ const validateToken = async(req, res, next) => {
   
       next()
   
-    } catch (err) {
+    } catch (e) {
       return res.status(403).send({
         status: "error",
-        message: err.message ?? err,
+        message: e.message ?? e,
       });
     }
 };

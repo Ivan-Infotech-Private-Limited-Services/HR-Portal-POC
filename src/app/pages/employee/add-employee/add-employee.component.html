@@ -1,9 +1,11 @@
 <div class="space-y-4 md:space-y-6 sm:p-8">
   <div class="flex justify-between">
     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-        Add Employee
+        {{employeeId ? 'Edit ' : 'Add ' }}Employee
     </h1>
-    <span class="cursor-pointer" (click)="dialogRef.close(false)">x</span>
+    <span class="cursor-pointer" (click)="dialogRef.close(false)">
+      <mat-icon>cancel</mat-icon>
+    </span>
   </div>
   <form [formGroup]="form" class="space-y-4 md:space-y-6" >
     <div class="grid md:grid-cols-2 md:gap-6">
@@ -14,7 +16,7 @@
         </div>
       </form-field>
       <form-field [errorControl]="form.get('userId')" name="user id">
-        <label for="userId" class="f-label">User ID</label>
+        <label for="userId" class="f-label">Card No.</label>
         <input type="text" formControlName="userId" name="userId" id="userId" placeholder="XX-XXX" class="f-control" autocomplete="off">
       </form-field>
       <form-field [errorControl]="form.get('firstName')" name="first name">
@@ -31,7 +33,7 @@
       </form-field>
       <form-field [errorControl]="form.get('wageRate')" name="incentive rate">
         <label for="wageRate" class="f-label">Wages/Day</label>
-        <input (change)="calculateWages($event)" type="text" formControlName="wageRate" name="wageRate" id="wageRate" placeholder="₹0.00" class="f-control" autocomplete="off">
+        <input (input)="calculateWages()" type="text" formControlName="wageRate" name="wageRate" id="wageRate" placeholder="₹0.00" class="f-control" autocomplete="off">
       </form-field>
     </div>
  
@@ -42,7 +44,7 @@
     </div>
 
     <div class="text-center">
-      <button type="button" (click)="create()" class="w-60 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 focus:outline-none cursor-pointer">Create Employee</button>
+      <button [disabled]="this.form.invalid" type="button" (click)="employeeId ? update() : create()" class="w-60 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 focus:outline-none cursor-pointer disabled:bg-primary-3  00">{{ employeeId ?'Update ':'Create '}} Employee</button>
     </div>
   </form>
 </div>

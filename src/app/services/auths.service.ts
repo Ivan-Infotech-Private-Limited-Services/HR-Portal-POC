@@ -17,7 +17,7 @@ export class AuthsService {
       }
       delete response.body["x-access-token"];
       localStorage.setItem("user-data", JSON.stringify(response.body));
-      return response.body;
+      return response;
     } catch (e) {
       throw e
     }

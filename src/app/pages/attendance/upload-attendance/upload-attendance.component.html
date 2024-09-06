@@ -1,0 +1,37 @@
+<div class="space-y-4 md:space-y-6 sm:p-8">
+  <div class="flex justify-between">
+    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
+        Upload Attendance
+    </h1>
+    <span class="cursor-pointer" (click)="dialogRef.close(false)">
+      <mat-icon>cancel</mat-icon>
+    </span>
+  </div>
+  <form [formGroup]="form">
+    <div class="grid md:grid-cols-2 md:gap-6 ">
+      <form-field  [errorControl]="form.get('attendanceMonth')" name="Attendance Month">
+        <label for="attendanceMonth" class="f-label">Attendance Month</label>
+        <div class="f-control">
+          <ngx-select-dropdown formControlName="attendanceMonth" [options]="data.monthMaster" [config]="{search: false, placeholder: 'Choose One', displayKey:'fullName'}" [multiple]="false"></ngx-select-dropdown>
+        </div>
+      </form-field>
+      <form-field  [errorControl]="form.get('attendanceYear')" name="Attendance Year">
+        <label for="attendanceYear" class="f-label">Attendance Year</label>
+        <div class="f-control">
+          <ngx-select-dropdown formControlName="attendanceYear" [options]="data.yearMaster" [config]="{search: false, placeholder: 'Choose One'}" [multiple]="false"></ngx-select-dropdown>
+        </div>
+      </form-field>
+    </div>
+    <form-field  [errorControl]="form.get('file')" name="File">
+      <label for="file" class="f-label">Upload File <small>(*csv only)</small></label>
+      <input formControlName="file" class="f-control" type="file" id="formFile"
+      accept=".csv"
+      (change)="onFileChanged($event, form, 'file', 'file_source')">
+    </form-field>
+  </form>
+
+  <div class="flex justify-center text-center pt-5">
+    <button [disabled]="this.form.get('attendanceMonth')?.invalid || this.form.get('attendanceYear')?.invalid" type="button" (click)="downloadSampleFile()" class="w-40 text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 focus:outline-none cursor-pointer disabled:bg-gray-300 ">Sample File</button>
+    <button [disabled]="this.form.invalid" type="button" (click)="uploadFile()" class="w-40 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 focus:outline-none cursor-pointer disabled:bg-primary-300 ">Upload</button>
+  </div>
+</div>

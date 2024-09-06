@@ -7,6 +7,7 @@ import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
     SharedModule,
     MatDialogModule,
     MatSelectModule,
-    SelectDropDownModule
+    SelectDropDownModule,
+    MatIconModule
   ],
   declarations: [EmployeeComponent, AddEmployeeComponent]
 })

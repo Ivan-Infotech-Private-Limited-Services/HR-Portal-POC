@@ -1,7 +1,6 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -20,13 +19,15 @@ $HR-Portal-POC-warn: mat.define-palette(mat.$red-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$HR-Portal-POC-theme: mat.define-light-theme((
-  color: (
-    primary: $HR-Portal-POC-primary,
-    accent: $HR-Portal-POC-accent,
-    warn: $HR-Portal-POC-warn,
+$HR-Portal-POC-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $HR-Portal-POC-primary,
+      accent: $HR-Portal-POC-accent,
+      warn: $HR-Portal-POC-warn,
+    ),
   )
-));
+);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
@@ -38,14 +39,48 @@ $HR-Portal-POC-theme: mat.define-light-theme((
 @tailwind components;
 @tailwind utilities;
 
+// @import 'ngx-toastr/toastr-bs5-alert';
+@import 'ngx-toastr/toastr';
+
 * {
   margin: 0;
   padding: 0;
   outline: none;
 }
 
-button{
-    all: unset;
+button {
+  all: unset;
+  cursor: pointer;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Archivo", Roboto, "Helvetica Neue", sans-serif;
+  font-weight: 500;
+}
+
+.ngx-dropdown-button {
+  border: none !important;
+  background-color: transparent !important;
+  min-height: auto !important;
+  padding: 0px !important;
+}
+
+/* For modern browsers */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(241, 241, 241); /* Background of the scr ollbar (track) */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1d4ed8; /* Scrollbar thumb (draggable part) */
+  border-radius: 20px; /* Make it rounded */
+  border: 2px solid rgb(240, 239, 239); /* Add a border of light grey to create some space around the thumb */
+}
