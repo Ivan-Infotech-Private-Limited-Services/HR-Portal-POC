@@ -34,7 +34,7 @@ function getHourDiff(startTime, endTime) {
   // If end time is less than start time, assume end time is the next day
   let diffInMinutes;
   if (endTotalMinutes < startTotalMinutes) {
-    diffInMinutes = (1440 - startTotalMinutes) + endTotalMinutes; // 1440 minutes in a day
+    diffInMinutes = 1440 - startTotalMinutes + endTotalMinutes; // 1440 minutes in a day
   } else {
     diffInMinutes = endTotalMinutes - startTotalMinutes;
   }
@@ -45,13 +45,21 @@ function getHourDiff(startTime, endTime) {
   return diffInHours.toFixed(2);
 }
 
-
 const exportExcel = async (req, res) => {
   try {
     const isValid = new Validator(req.body, {
       attendanceMonth: "required",
       attendanceYear: "required",
     });
+
+    const where = {
+      corporateId: req.corporateId,
+      userType: "employee",
+    }
+
+    // if(req.user.userType == 'staff'){
+    //   where["createdBy"] = req.user._id 
+    // }
 
     if (!(await isValid.check())) throw isValid.errors;
 
@@ -79,10 +87,7 @@ const exportExcel = async (req, res) => {
     WS.cell(1, 1).string("Employee Name");
     WS.cell(1, 2).string("Card No");
 
-    const users = await User.find({
-      corporateId: req.corporateId,
-      userType: "employee",
-    }).select("firstName lastName fullName userId");
+    const users = await User.find(where).select("firstName lastName fullName userId");
 
     users.forEach((user, i) => {
       WS.cell(i + 2, 1).string(user?.fullName);
@@ -147,11 +152,17 @@ const importExcel = async (req, res) => {
           const daysInMonth = month.daysInMonth();
 
           fileStream.pause();
-          
-          const user = await User.findOne({
+
+          const where = {
             corporateId: req.corporateId,
             userId: row["Card No"],
-          }).select("_id shift");
+          }
+
+          // if(req.user.userType == 'staff'){
+          //   where["createdBy"] = req.user._id 
+          // }
+
+          const user = await User.findOne().select("_id shift");
 
           if (user) {
             const doc = {
@@ -166,7 +177,8 @@ const importExcel = async (req, res) => {
                 shiftStartTime: user.shift?.shiftStartTime,
                 ShiftEndTime: user.shift?.ShiftEndTime,
               },
-              attendances:[]
+              uploadedBy: req.user._id,
+              attendances: [],
             };
 
             for (let i = 1; i <= daysInMonth; i++) {
@@ -183,22 +195,25 @@ const importExcel = async (req, res) => {
                 grossHours: 0,
                 workingHours: 0,
                 incentiveHour: 0,
+              };
+
+              if (attendance.loginTime && attendance.logoutTime) {
+                attendance.grossHours = getHourDiff(
+                  attendance.loginTime,
+                  attendance.logoutTime
+                );
+                attendance.workingHours =
+                  attendance.grossHours - attendance.breakTime;
+                const shiftHours = getHourDiff(
+                  doc.shift.shiftStartTime,
+                  doc.shift.ShiftEndTime
+                );
+                if (attendance.grossHours > shiftHours) {
+                  attendance.incentiveHour = attendance.grossHours - shiftHours;
+                }
               }
 
-              if(attendance.loginTime && attendance.logoutTime){
-                 attendance.grossHours = getHourDiff(attendance.loginTime, attendance.logoutTime);
-                 attendance.workingHours = attendance.grossHours - attendance.breakTime;
-                 const shiftHours = getHourDiff(
-                   doc.shift.shiftStartTime,
-                   doc.shift.ShiftEndTime
-                 );
-                 if (attendance.grossHours > shiftHours) {
-                   attendance.incentiveHour = attendance.grossHours - shiftHours;
-                 }
-              }
-
-              doc.attendances.push(attendance)
-
+              doc.attendances.push(attendance);
             }
 
             await Attendance.updateOne(
@@ -206,13 +221,12 @@ const importExcel = async (req, res) => {
                 userId: doc.userId,
                 corporateId: doc.corporateId,
                 attendanceMonth,
-                attendanceYear
+                attendanceYear,
               },
               doc,
               { upsert: true, new: true }
             );
           }
-
 
           fileStream.resume();
         } catch (e) {
@@ -252,21 +266,26 @@ const search = async (req, res) => {
     const { attendanceMonth, attendanceYear, search } = req.query;
 
     const where = {
-      _id: { $ne: req.user._id },
       corporateId: { $eq: req.user.corporateId },
     };
 
-    if (search && (search != 'null' && search != ' ')) {
+    if (search && search != "null" && search != " ") {
       where["$or"] = [{ firstName: search }, { lastName: search }];
     }
-  
+
     where["attendanceMonth"] = { $eq: parseFloat(attendanceMonth) };
     where["attendanceYear"] = { $eq: parseFloat(attendanceYear) };
 
-    const attendances = await Attendance.find(where).select("userDbId userId attendances.attendanceStat").populate({
-      path: 'userDbId',
-      select: 'firstName lastName fullName userId',
-    }).exec();
+    const attendances = await Attendance.find(where)
+      .select("userDbId userId attendances.attendanceStat")
+      .populate({
+        path: "userDbId",
+        select: "firstName lastName fullName userId",
+      }).populate({
+        path: "uploadedBy",
+        select: "firstName lastName fullName userId",
+      })
+      .exec();
 
     return res.status(200).json({
       docs: attendances,
@@ -278,31 +297,32 @@ const search = async (req, res) => {
       message: e.message ?? e,
     });
   }
-}
+};
 
 const createSummary = async (req, res) => {
   try {
     const isValid = new Validator(req.body, {
       attendanceMonth: "required",
       attendanceYear: "required",
-      selectedRowIds:"array",
-      unselectedRowIds:"array",
-      selectedAllRowIds:"required",
+      selectedRowIds: "array",
+      unselectedRowIds: "array",
+      selectedAllRowIds: "required",
     });
 
     if (!(await isValid.check())) throw isValid.errors;
 
-    const { 
-      attendanceMonth, 
-      attendanceYear, 
+    const {
+      attendanceMonth,
+      attendanceYear,
       selectedRowIds,
       unselectedRowIds,
-      selectedAllRowIds } = req.body;
+      selectedAllRowIds,
+    } = req.body;
 
     const where = {
       corporateId: { $eq: req.user.corporateId },
     };
-  
+
     where["attendanceMonth"] = { $eq: parseFloat(attendanceMonth) };
     where["attendanceYear"] = { $eq: parseFloat(attendanceYear) };
 
@@ -310,7 +330,7 @@ const createSummary = async (req, res) => {
       if (unselectedRowIds && unselectedRowIds.length > 0) {
         where["_id"] = { $nin: unselectedRowIds };
       }
-    }else {
+    } else {
       if (selectedRowIds && selectedRowIds.length > 0) {
         where["_id"] = { $in: selectedRowIds };
       } else {
@@ -318,9 +338,12 @@ const createSummary = async (req, res) => {
       }
     }
 
-    const entities = await Attendance.find(where).select("attendances monthlySummary status").populate().exec();
+    const entities = await Attendance.find(where)
+      .select("attendances monthlySummary status")
+      .populate()
+      .exec();
 
-    entities.forEach((entity)=>{
+    entities.forEach((entity) => {
       let totalPresent = 0;
       let totalAbsent = 0;
       let totalWeeklyOffs = 0;
@@ -329,35 +352,40 @@ const createSummary = async (req, res) => {
       let totalPayDays = 0;
 
       entity.monthlySummary = entity.attendances.map((attendance) => {
-        if(attendance.attendanceStat == 'P'){
-          totalPresent += 1
+        if (attendance.attendanceStat == "P") {
+          totalPresent += 1;
         }
-        if(attendance.attendanceStat == 'A'){
-          totalAbsent += 1
+        if (attendance.attendanceStat == "A") {
+          totalAbsent += 1;
         }
-        if(attendance.attendanceStat == 'WO'){
-          totalWeeklyOffs += 1
+        if (attendance.attendanceStat == "WO") {
+          totalWeeklyOffs += 1;
         }
-        if(attendance.attendanceStat == 'H'){
-          totalHolidays += 1
+        if (attendance.attendanceStat == "H") {
+          totalHolidays += 1;
         }
 
         totalIncentiveHours += attendance.incentiveHour;
         totalPayDays = totalPresent + totalWeeklyOffs + totalHolidays;
       });
 
-      entity.monthlySummary.totalWorkingDays = moment(attendanceYear + "-" + attendanceMonth,"YYYY-MM" ).daysInMonth(),
-      entity.monthlySummary.totalPresent =  totalPresent.toFixed(2) 
-      entity.monthlySummary.totalAbsent =  totalAbsent.toFixed(2) 
-      entity.monthlySummary.totalWeeklyOffs =  totalWeeklyOffs.toFixed(2) 
-      entity.monthlySummary.totalHolidays =  totalHolidays.toFixed(2) 
-      entity.monthlySummary.totalIncentiveHours =  totalIncentiveHours.toFixed(2) 
-      entity.monthlySummary.totalPayDays =  totalPayDays.toFixed(2) 
-      
-      entity.status = 'run';
+      (entity.monthlySummary.totalWorkingDays = moment(
+        attendanceYear + "-" + attendanceMonth,
+        "YYYY-MM"
+      ).daysInMonth()),
+        (entity.monthlySummary.totalPresent = totalPresent.toFixed(2));
+      entity.monthlySummary.totalAbsent = totalAbsent.toFixed(2);
+      entity.monthlySummary.totalWeeklyOffs = totalWeeklyOffs.toFixed(2);
+      entity.monthlySummary.totalHolidays = totalHolidays.toFixed(2);
+      entity.monthlySummary.totalIncentiveHours =
+        totalIncentiveHours.toFixed(2);
+      entity.monthlySummary.totalPayDays = totalPayDays.toFixed(2);
+
+      entity.status = "run";
+      entity.summarizedBy = req.user._id;
       entity.save();
-    })
-    
+    });
+
     return res.status(200).json({
       status: "success",
       message: "Attendance Summary Created Successfully!",
@@ -369,7 +397,7 @@ const createSummary = async (req, res) => {
       message: e.message ?? e,
     });
   }
-}
+};
 
 const getSummary = async (req, res) => {
   try {
@@ -386,20 +414,28 @@ const getSummary = async (req, res) => {
       corporateId: { $eq: req.user.corporateId },
     };
 
-    if (search && (search != 'null' && search != ' ')) {
+    if (search && search != "null" && search != " ") {
       where["$or"] = [{ firstName: search }, { lastName: search }];
     }
-  
+
     where["attendanceMonth"] = { $eq: parseFloat(attendanceMonth) };
     where["attendanceYear"] = { $eq: parseFloat(attendanceYear) };
 
-    where["monthlySummary"] = { $exists: true, $ne:null };
-    where["status"] = { $eq: 'run' };
+    where["monthlySummary"] = { $exists: true, $ne: null };
+    where["status"] = { $ne: "pending" };
 
-    const attendances = await Attendance.find(where).select("userDbId userId monthlySummary status").populate({
-      path: 'userDbId',
-      select: 'firstName lastName fullName userId',
-    }).exec();
+    const attendances = await Attendance.find(where)
+      .select("userDbId userId monthlySummary status")
+      .populate({
+        path: "userDbId",
+        select: "firstName lastName fullName userId",
+        populate: { path: "hodId", select: "firstName lastName fullName" },
+      })
+      .populate({
+        path: "summarizedBy",
+        select: "firstName lastName fullName",
+      })
+      .exec();
 
     return res.status(200).json({
       docs: attendances,
@@ -411,6 +447,12 @@ const getSummary = async (req, res) => {
       message: e.message ?? e,
     });
   }
-}
+};
 
-module.exports = { exportExcel, importExcel, search, createSummary, getSummary };
+module.exports = {
+  exportExcel,
+  importExcel,
+  search,
+  createSummary,
+  getSummary,
+};

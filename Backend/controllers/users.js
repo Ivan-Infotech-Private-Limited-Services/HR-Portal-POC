@@ -6,7 +6,7 @@ const search = async (req, res) => {
     const { search, userType } = req.query;
 
     const where = {
-      _id: { $ne: req.user._id },
+      // _id: { $ne: req.user._id },
       corporateId: { $eq: req.user.corporateId },
     };
 
@@ -18,10 +18,18 @@ const search = async (req, res) => {
       where["userType"] = { $eq: userType };
     }
 
+    // if(userType !== 'staff' && req.user.userType == 'staff' ){
+    //   where["createdBy"] = req.user._id 
+    // }
+
     const users = await User.find(where).select("-password").populate({
       path: 'hodId',
       select: 'firstName lastName fullName',
-    });
+    }).populate({
+      path: 'createdBy',
+      select: 'firstName lastName fullName',
+      options:{strictPopulate:false}
+    }).exec();
 
     return res.status(200).json({
       docs: users,
@@ -51,7 +59,7 @@ const create = async (req, res) => {
     const  {hodId, userId, firstName, lastName, incentiveRate, wageRate, earningHeads } = req.body;
 
     const existingUser = await User.findOne({corporateId:req.corporateId, userId}).select("-password");
-    if(existingUser) throw 'User already exist with this User ID';
+    if(existingUser) throw 'User already exist with this Card No';
 
     const hod = await User.findById(hodId).select('_id parentHods userType')
     
@@ -69,7 +77,8 @@ const create = async (req, res) => {
         wageRate,
         earningHeads
       },
-      userType:'employee'
+      userType:'employee',
+      createdBy:req.user._id
     }
 
     const user = await User.create(doc);

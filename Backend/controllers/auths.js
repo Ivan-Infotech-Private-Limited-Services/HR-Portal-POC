@@ -18,7 +18,8 @@ const login = async (req, res, next) => {
       $and: [
         {
           corporateId: { $eq: req.body.corpId },
-          userId: { $in: ['admin','staff']} ,
+          userId: { $eq: req.body.userId} ,
+          userType: { $nin: ['employee']} ,
           status: { $nin: ["pending", "deleted"] },
         },
       ],

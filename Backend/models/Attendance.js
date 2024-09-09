@@ -69,7 +69,7 @@ const AttendanceSchema = new Schema({
   ],
   monthlySummary:{
     totalWorkingDays: { type: Number, default: 0 }, // Total number of working days in the month
-    totalPayDays: { type: Number, default: 0 }, // Total number of working days in the month
+    totalPayDays: { type: Number, default: 0 }, // Total number of paying days in the month
     totalPresent: { type: Number, default: 0 }, // Total number of days the employee was present
     totalAbsent: { type: Number, default: 0 }, // Total number of absent days
     totalHolidays: { type: Number, default: 0 }, // Total holidays in the month
@@ -87,8 +87,16 @@ const AttendanceSchema = new Schema({
   },
   status:{
     type: String,
-    enum: ["pending", "run", "completed"],
+    enum: ["pending", "run", 'payrollRun', "completed"],
     default: "pending",
+  },
+  summarizedBy:{
+    type: Schema.Types.ObjectId,
+    ref: "users",
+  },
+  uploadedBy:{
+    type: Schema.Types.ObjectId,
+    ref: "users",
   },
   createdAt: {
     type: Date,

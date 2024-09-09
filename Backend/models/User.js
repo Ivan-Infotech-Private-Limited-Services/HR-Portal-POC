@@ -1,4 +1,4 @@
-const { Schema, model, default: mongoose, Types } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const UserSchema = new Schema(
   {
@@ -16,15 +16,15 @@ const UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "users",
     },
-    parentHods: [Types.ObjectId],
+    parentHods: [Schema.Types.ObjectId],
 
     details: {
       incentiveRate: Number,
       wageRate: Number,
       earningHeads: {
-        basic:{type:Number, default:40},
-        hra:{type:Number, default:30},
-        ca:{type:Number, default:30}
+        basic: { type: Number, default: 40 },
+        hra: { type: Number, default: 30 },
+        ca: { type: Number, default: 30 },
       },
     },
     shift: {
@@ -37,6 +37,10 @@ const UserSchema = new Schema(
       type: String,
       enum: ["pending", "active", "inactive", "deleted"],
       default: "active",
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: "users",
     },
     createdAt: {
       type: Date,

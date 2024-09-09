@@ -84,3 +84,7 @@ body {
   border-radius: 20px; /* Make it rounded */
   border: 2px solid rgb(240, 239, 239); /* Add a border of light grey to create some space around the thumb */
 }
+
+button:disabled{
+ background: rgb(147 197 253) !important;
+}

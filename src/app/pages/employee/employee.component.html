@@ -67,6 +67,7 @@
             <th scope="col" class="px-6 py-5">Min. Wages Per Day</th>
             <th scope="col" class="px-6 py-5">Incentive/Hour.</th>
             <th scope="col" class="px-6 py-5">HOD</th>
+            <th scope="col" class="px-6 py-5">Created By</th>
             <th scope="col" class="px-6 py-5">Action</th>
           </tr>
         </thead>
@@ -82,13 +83,16 @@
             <td class="px-6 py-4">₹{{employee?.details?.wageRate || '0.00'}}</td>
             <td class="px-6 py-4">₹{{employee?.details?.incentiveRate || '0.00'}}</td>
             <td class="px-6 py-4">{{employee?.hodId?.fullName}}</td>
+            <td class="px-6 py-4">{{employee?.createdBy?.fullName || 'N/A'}}</td>
             <td class="px-6 py-4">
               <div (click)="editEmployee(employee?._id)" class="w-[30px] bg-primary-700 text-white border rounded cursor-pointer text-center">
                 <mat-icon class="text-center text-[20px] pt-1">create</mat-icon>
               </div>
-              <!-- <a href="#" class="font-medium text-blue-600 hover:underline">
-                
-              </a> -->
+            </td>
+          </tr>
+          <tr *ngIf="!employees?.length">
+            <td colspan="7">
+              <no-data-found></no-data-found>
             </td>
           </tr>
         </tbody>

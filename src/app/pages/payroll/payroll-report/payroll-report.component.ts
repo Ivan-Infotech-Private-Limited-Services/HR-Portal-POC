@@ -7,16 +7,16 @@ import { PayrollService } from 'src/app/services/payroll.service';
 import { Global } from 'src/app/shared/global';
 
 @Component({
-  selector: 'app-payroll',
-  templateUrl: './payroll.component.html',
-  styleUrls: ['./payroll.component.css']
+  selector: 'app-payroll-report',
+  templateUrl: './payroll-report.component.html',
+  styleUrls: ['./payroll-report.component.css']
 })
-export class PayrollComponent implements OnInit {
-  
+export class PayrollReportComponent implements OnInit {
+
   Global = new Global();
   form:FormGroup = new FormGroup({
-    attendanceMonth: new FormControl('', Validators.required),
-    attendanceYear: new FormControl('', Validators.required),
+    payrollMonth: new FormControl('', Validators.required),
+    payrollYear: new FormControl('', Validators.required),
     search:new FormControl(null)
   });
   
@@ -24,25 +24,24 @@ export class PayrollComponent implements OnInit {
   selectedAllRowIds: boolean = false;
   selectedRowIds: string[] = []; 
   unselectedRowIds: string[] = [];
-
+  
   constructor(
-    private attendanceService: AttendanceService,
+    private payrollService: PayrollService,
     private toastr:ToastrService,
-    private spinner:NgxSpinnerService,
-    private payrollService:PayrollService
+    private spinner:NgxSpinnerService
   ) { }
 
   async ngOnInit() {
-    this.form.get('attendanceMonth')?.setValue(this.Global.monthMaster[new Date().getMonth()])
-    this.form.get('attendanceYear')?.setValue(new Date().getFullYear());
-    this.employees = await this.fetchAttendanceSummary()
+    this.form.get('payrollMonth')?.setValue(this.Global.monthMaster[new Date().getMonth()])
+    this.form.get('payrollYear')?.setValue(new Date().getFullYear());
+    this.employees = await this.fetchReportLisiting()
   }
 
   async onFilterChange(){
-   this.employees = await this.fetchAttendanceSummary()
+   this.employees = await this.fetchReportLisiting();
   }
 
-  async fetchAttendanceSummary() {
+  async fetchReportLisiting() {
     try {
       if(this.form.invalid){
         this.form.markAllAsTouched();
@@ -50,11 +49,11 @@ export class PayrollComponent implements OnInit {
       }
       this.spinner.show()
       const query = {
-        attendanceMonth:this.form.get('attendanceMonth')?.value?.value,
-        attendanceYear:this.form.get('attendanceYear')?.value,
+        payrollMonth:this.form.get('payrollMonth')?.value?.value,
+        payrollYear:this.form.get('payrollYear')?.value,
         search:this.form.get('searchKey')?.value ?? null
       }
-      const res = await this.attendanceService.getSummary(query);
+      const res = await this.payrollService.search(query);
       this.spinner.hide()
       return res.docs;
     } catch (e:any) {
@@ -70,8 +69,6 @@ export class PayrollComponent implements OnInit {
 
     if (checkbox) {
       if (checkbox.checked) {
-        console.log(rowId);
-        
         const index = this.unselectedRowIds.indexOf(rowId);
         if (index > -1) {
           this.unselectedRowIds.splice(index, 1);
@@ -80,8 +77,6 @@ export class PayrollComponent implements OnInit {
           this.selectedRowIds.push(rowId);
         }
       } else {
-        console.log(rowId);
-        
         const index = this.selectedRowIds.indexOf(rowId);
         if (index > -1) {
           this.selectedRowIds.splice(index, 1);
@@ -119,33 +114,40 @@ export class PayrollComponent implements OnInit {
     );
   }
 
-  
- async runPayroll(){
-  try {
-    if(this.form.invalid){
-      this.form.markAllAsTouched()
-      return
-    }
+  async downloadSalaryReport() {
+    try {
+      if (
+        !this.form.get('payrollMonth')?.valid &&
+        !this.form.get('payrollYear')?.valid
+      ) {
+        return;
+      }
+      const body = {
+        payrollMonth:this.form.get('payrollMonth')?.value?.value,
+        payrollYear:this.form.get('payrollYear')?.value,
+        selectedRowIds:this.selectedRowIds,
+        unselectedRowIds:this.unselectedRowIds,
+        selectedAllRowIds:this.selectedAllRowIds,
+      }
+      this.spinner.show()
 
-    const body = {
-      payrollMonth:this.form.get('attendanceMonth')?.value?.value,
-      payrollYear:this.form.get('attendanceYear')?.value,
-      selectedRowIds:this.selectedRowIds,
-      unselectedRowIds:this.unselectedRowIds,
-      selectedAllRowIds:this.selectedAllRowIds,
-    }
+      const sf = this.Global.monthMaster.find(
+        (m: any) => m.index == this.form.get('payrollMonth')?.value?.index
+      )?.shortName;
 
-    this.spinner.show()
-    const res = await this.payrollService.runPayroll(body);
-    if(res){
-      this.toastr.success(res.message)
+      await this.payrollService.downloadFile(
+        `Payroll-Report-${
+          this.form.get('payrollYear')?.value
+        }-${sf}.xlsx`,
+        body
+      );
+      
       this.spinner.hide()
+    } catch (e:any) {
+      this.spinner.hide()
+      console.error(e);
+      this.toastr.error(e || e.message || 'Something Went Wrong');
     }
-  } catch (e:any) {
-    this.spinner.hide()
-    console.error(e);
-    this.toastr.error(e || e.message || 'Something Went Wrong');
   }
-}
 
 }

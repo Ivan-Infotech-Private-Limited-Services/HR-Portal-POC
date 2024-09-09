@@ -93,6 +93,7 @@
             <th scope="col" class="px-4 py-5 whitespace-nowrap">Total Holidays</th>
             <th scope="col" class="px-4 py-5 whitespace-nowrap">Total Weekly Off</th>
             <th scope="col" class="px-4 py-5 whitespace-nowrap">Total Incentive Hours</th>
+            <th scope="col" class="px-4 py-5 whitespace-nowrap">Summarized By</th>
           </tr>
         </thead>
         <tbody>
@@ -119,8 +120,9 @@
             <td class="px-4 py-3 text-center">{{employee?.monthlySummary?.totalHolidays}}</td>
             <td class="px-4 py-3 text-center">{{employee?.monthlySummary?.totalWeeklyOffs}}</td>
             <td class="px-4 py-3 text-center">{{employee?.monthlySummary?.totalIncentiveHours}}</td>
+            <td class="px-4 py-3">{{employee?.summarizedBy?.fullName}}</td>
           </tr>
-          <tr *ngIf="!employees.length">
+          <tr *ngIf="!employees?.length">
             <td [attr.colspan]="10">
               <div>
                 <no-data-found></no-data-found>

@@ -1,6 +1,7 @@
 const { Router } = require('express');
-const { exportExcel, importExcel, search, createSummary, getSummary } = require('../controllers/attendances');
 const { validateToken } = require('../middlewares/authentication');
+const { exportExcel, importExcel, search, createSummary, getSummary } = require('../controllers/attendances');
+
 const router = Router();
 
 try {

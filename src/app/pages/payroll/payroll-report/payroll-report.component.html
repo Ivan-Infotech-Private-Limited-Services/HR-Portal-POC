@@ -2,20 +2,20 @@
   <div class="page-content">
     <header>
       <div class="mx-auto max-w-7xl pb-10">
-        <h1 class="text-3xl font-bold text-gray-900">Upload Attendance</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Payroll Report</h1>
       </div>
     </header>
     <div [formGroup]="form" class="grid md:grid-cols-4 md:gap-4 pb-8">
-      <form-field  [errorControl]="form.get('attendanceMonth')" name="Attendance Month">
-        <label for="attendanceMonth" class="f-label">Attendance Month</label>
+      <form-field  [errorControl]="form.get('payrollMonth')" name="Payroll Month">
+        <label for="payrollMonth" class="f-label">Payroll Month</label>
         <div class="f-control">
-          <ngx-select-dropdown (change)="getDaysOfAMonth(); onFilterChange()" formControlName="attendanceMonth" [options]="Global.monthMaster" [config]="{search: false, placeholder: 'Choose One', displayKey:'fullName'}" [multiple]="false"></ngx-select-dropdown>
+          <ngx-select-dropdown (change)="onFilterChange()" formControlName="payrollMonth" [options]="Global.monthMaster" [config]="{search: false, placeholder: 'Choose One', displayKey:'fullName'}" [multiple]="false"></ngx-select-dropdown>
         </div>
       </form-field>
-      <form-field  [errorControl]="form.get('attendanceYear')" name="Attendance Year">
-        <label for="attendanceYear" class="f-label">Attendance Year</label>
+      <form-field  [errorControl]="form.get('payrollYear')" name="Payroll Year">
+        <label for="payrollYear" class="f-label">Payroll Year</label>
         <div class="f-control">
-          <ngx-select-dropdown (change)="getDaysOfAMonth(); onFilterChange()" formControlName="attendanceYear" [options]="Global.generateYears(2, 'before')" [config]="{search: false, placeholder: 'Choose One', displayKey:'fullName'}" [multiple]="false"></ngx-select-dropdown>
+          <ngx-select-dropdown (change)="onFilterChange()" formControlName="payrollYear" [options]="Global.generateYears(2, 'before')" [config]="{search: false, placeholder: 'Choose One', displayKey:'fullName'}" [multiple]="false"></ngx-select-dropdown>
         </div>
       </form-field>
     </div>
@@ -67,18 +67,10 @@
         <button
         [disabled]="!isAnyRowsChecked()"
           type="button"
-          (click)="summarizeAttendance()"
+          (click)="downloadSalaryReport()"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none cursor-pointer"
         >
-         Summarize Attendance
-        </button>
-        <button
-        [disabled]="!isAnyRowsChecked()"
-          type="button"
-          (click)="openUploadAttendanceDialog()"
-          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none cursor-pointer"
-        >
-          + Upload Attendance
+         Download Report
         </button>
       </div>
     </div>
@@ -96,20 +88,20 @@
               Employee Name
             </th>
             <th scope="col" class="px-4 py-5 whitespace-nowrap">Card No.</th>
-            <th scope="col" class="px-4 text-center"  *ngFor="let day of daysArr">
-              <div>{{day.date}}</div>
-              <div class="pt-1">{{day.dayName}}</div>
-            </th>
-            <th scope="col" class="px-4 text-center" >Uploaded By</th>
+            <th scope="col" class="px-4 py-5 whitespace-nowrap">Hod</th>
+            <th scope="col" class="px-4 py-5 whitespace-nowrap">Total Gross</th>
+            <th scope="col" class="px-4 py-5 whitespace-nowrap">Total Incentive</th>
+            <th scope="col" class="px-4 py-5 whitespace-nowrap">Net Take Home</th>
+            <th scope="col" class="px-4 py-5 whitespace-nowrap">Run By</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let employee of employees; let i = index" class="odd:bg-white even:bg-gray-100 border-b">
             <th>
               <div class="flex items-center justify-center">
-                <input  [attr.data-checkbox-id]="employee._id"
-                [checked]="isRowChecked(employee._id)"
-                (change)="rowCheckBoxChecked($event, employee)" id="default-checkbox" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded ">
+                <input  [attr.data-checkbox-id]="employee?.userDbId?._id"
+                [checked]="isRowChecked(employee?.userDbId?._id)"
+                (change)="rowCheckBoxChecked($event, employee?.userDbId)" id="default-checkbox" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded ">
                 <label for="default-checkbox" class="ms-2 text-gray-700">{{i + 1}}</label>
               </div>
             </th>
@@ -119,24 +111,15 @@
             >
               {{employee?.userDbId?.fullName}}
             </th>
-            <td class="px-4 py-3 text-gree">{{employee?.userId}}</td>
-            <td class="px-4 py-3 text-center" *ngFor="let attendance of employee?.attendances">
-              <div [ngClass]="{
-                'text-green-600':attendance?.attendanceStat === 'P',
-                'text-red-600': attendance?.attendanceStat === 'A',
-                'text-blue-600': attendance?.attendanceStat === 'WO',
-                'text-yellow-500': attendance?.attendanceStat === 'H',
-                'text-gray-500': attendance?.attendanceStat === ''
-              }" class="font-bold">
-                {{attendance?.attendanceStat || '!'}}
-              </div>
-            </td>
-            <td>
-              {{employee?.uploadedBy?.fullName || 'N/A'}}
-            </td>
+            <td class="px-4 py-3">{{employee?.userId}}</td>
+            <td class="px-4 py-3">{{employee?.userDbId?.hodId?.fullName}}</td>
+            <td class="px-4 py-3">₹{{employee?.monthlyGrossAmount || '0.00'}} /-</td>
+            <td class="px-4 py-3">₹{{employee?.earnedIncentiveAmount || '0.00'}} /-</td>
+            <td class="px-4 py-3">₹{{employee?.netTakeHomeAmount || '0.00'}} /-</td>
+            <td class="px-4 py-3">{{employee?.runBy?.fullName}}</td>
           </tr>
           <tr *ngIf="!employees?.length">
-            <td [attr.colspan]="3+daysArr.length">
+            <td [attr.colspan]="8">
               <div>
                 <no-data-found></no-data-found>
               </div>

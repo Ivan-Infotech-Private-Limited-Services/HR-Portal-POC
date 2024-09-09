@@ -104,4 +104,12 @@ export class AttendanceSummaryComponent implements OnInit {
       return this.selectedRowIds.includes(rowId);
     }
   }
+
+  isAnyRowsChecked(): boolean {
+    return (
+      this.selectedAllRowIds == true ||
+      this.selectedRowIds.length > 0 ||
+      this.unselectedRowIds.length > 0
+    );
+  }
 }

@@ -12,14 +12,14 @@ import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-attendance',
   templateUrl: './attendance.component.html',
-  styleUrls: ['./attendance.component.css']
+  styleUrls: ['./attendance.component.css'],
 })
 export class AttendanceComponent implements OnInit {
   Global = new Global();
-  form:FormGroup = new FormGroup({
+  form: FormGroup = new FormGroup({
     attendanceMonth: new FormControl('', Validators.required),
     attendanceYear: new FormControl('', Validators.required),
-    search:new FormControl(null)
+    search: new FormControl(null),
   });
 
   daysArr: {
@@ -27,35 +27,37 @@ export class AttendanceComponent implements OnInit {
     dayName: string;
   }[] = [];
 
-  employees:any[] = [];
+  employees: any[] = [];
   selectedAllRowIds: boolean = false;
-  selectedRowIds: string[] = []; 
+  selectedRowIds: string[] = [];
   unselectedRowIds: string[] = [];
 
   constructor(
     private dialog: MatDialog,
-    private attendanceService:AttendanceService,
-    private toastr:ToastrService,
-    private spinner:NgxSpinnerService
-  ) { }
+    private attendanceService: AttendanceService,
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
+  ) {}
 
   async ngOnInit() {
-    this.form.get('attendanceMonth')?.setValue(this.Global.monthMaster[new Date().getMonth()])
+    this.form
+      .get('attendanceMonth')
+      ?.setValue(this.Global.monthMaster[new Date().getMonth()]);
     this.form.get('attendanceYear')?.setValue(new Date().getFullYear());
     this.getDaysOfAMonth();
-    this.employees = await this.fetchAttendances()
+    this.employees = await this.fetchAttendances();
   }
 
-  async onFilterChange(){
-   this.employees = await this.fetchAttendances()
+  async onFilterChange() {
+    this.employees = await this.fetchAttendances();
   }
-  
+
   getDaysOfAMonth() {
     let m = this.form.get('attendanceMonth')?.value;
     let y = this.form.get('attendanceYear')?.value;
-    if (!m || !y){
+    if (!m || !y) {
       return;
-    } 
+    }
     const month = moment(y + '-' + m, 'YYYY-MM');
     const daysInMonth = month.daysInMonth();
     this.daysArr = [];
@@ -72,8 +74,8 @@ export class AttendanceComponent implements OnInit {
   openUploadAttendanceDialog() {
     const dialogRef = this.dialog.open(UploadAttendanceComponent, {
       data: {
-        monthMaster:this.Global.monthMaster,
-        yearMaster:this.Global.generateYears(2, 'before')
+        monthMaster: this.Global.monthMaster,
+        yearMaster: this.Global.generateYears(2, 'before'),
       },
       minWidth: '550px',
       width: 'min-content',
@@ -81,33 +83,32 @@ export class AttendanceComponent implements OnInit {
       maxHeight: '90vh',
       hasBackdrop: true,
       disableClose: true,
-      autoFocus:false
-      
+      autoFocus: false,
     });
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result?.status) {
-       this.employees = await this.fetchAttendances()
+        this.employees = await this.fetchAttendances();
       }
     });
   }
 
   async fetchAttendances() {
     try {
-      if(this.form.invalid){
+      if (this.form.invalid) {
         this.form.markAllAsTouched();
-        return
+        return;
       }
       const query = {
-        attendanceMonth:this.form.get('attendanceMonth')?.value?.value,
-        attendanceYear:this.form.get('attendanceYear')?.value,
-        search:this.form.get('searchKey')?.value ?? null
-      }
-      this.spinner.show()
+        attendanceMonth: this.form.get('attendanceMonth')?.value?.value,
+        attendanceYear: this.form.get('attendanceYear')?.value,
+        search: this.form.get('searchKey')?.value ?? null,
+      };
+      this.spinner.show();
       const res = await this.attendanceService.search(query);
-      this.spinner.hide()
+      this.spinner.hide();
       return res.docs;
-    } catch (e:any) {
-      this.spinner.hide()
+    } catch (e: any) {
+      this.spinner.hide();
       console.error(e);
       this.toastr.error(e || e.message || 'Something Went Wrong');
     }
@@ -115,7 +116,9 @@ export class AttendanceComponent implements OnInit {
 
   rowCheckBoxChecked(event: any, row: any) {
     let rowId = row._id;
-    let checkbox = document.querySelector(`[data-checkbox-id="${rowId}"]`) as HTMLInputElement;
+    let checkbox = document.querySelector(
+      `[data-checkbox-id="${rowId}"]`
+    ) as HTMLInputElement;
 
     if (checkbox) {
       if (checkbox.checked) {
@@ -137,7 +140,7 @@ export class AttendanceComponent implements OnInit {
       }
     }
   }
-  
+
   allRowsCheckboxChecked(event: any) {
     if (this.selectedAllRowIds) {
       this.unselectedRowIds = [];
@@ -156,32 +159,39 @@ export class AttendanceComponent implements OnInit {
     }
   }
 
- async summarizeAttendance(){
+  isAnyRowsChecked(): boolean {
+    return (
+      this.selectedAllRowIds == true ||
+      this.selectedRowIds.length > 0 ||
+      this.unselectedRowIds.length > 0
+    );
+  }
+
+  async summarizeAttendance() {
     try {
-      if(this.form.invalid){
-        this.form.markAllAsTouched()
-        return
+      if (this.form.invalid) {
+        this.form.markAllAsTouched();
+        return;
       }
 
       const body = {
-        attendanceMonth:this.form.get('attendanceMonth')?.value?.value,
-        attendanceYear:this.form.get('attendanceYear')?.value,
-        selectedRowIds:this.selectedRowIds,
-        unselectedRowIds:this.unselectedRowIds,
-        selectedAllRowIds:this.selectedAllRowIds,
-      }
+        attendanceMonth: this.form.get('attendanceMonth')?.value?.value,
+        attendanceYear: this.form.get('attendanceYear')?.value,
+        selectedRowIds: this.selectedRowIds,
+        unselectedRowIds: this.unselectedRowIds,
+        selectedAllRowIds: this.selectedAllRowIds,
+      };
 
-      this.spinner.show()
+      this.spinner.show();
       const res = await this.attendanceService.createAttendanceSummary(body);
-      if(res){
-        this.toastr.success(res.message)
-        this.spinner.hide()
+      if (res) {
+        this.toastr.success(res.message);
+        this.spinner.hide();
       }
-    } catch (e:any) {
-      this.spinner.hide()
+    } catch (e: any) {
+      this.spinner.hide();
       console.error(e);
       this.toastr.error(e || e.message || 'Something Went Wrong');
     }
   }
-
 }

@@ -44,7 +44,7 @@
     </div>
 
     <div class="text-center">
-      <button [disabled]="this.form.invalid" type="button" (click)="employeeId ? update() : create()" class="w-60 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 focus:outline-none cursor-pointer disabled:bg-primary-3  00">{{ employeeId ?'Update ':'Create '}} Employee</button>
+      <button [disabled]="this.form.invalid" type="button" (click)="employeeId ? update() : create()" class="w-60 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 me-2 mb-2 focus:outline-none cursor-pointer">{{ employeeId ?'Update ':'Create '}} Employee</button>
     </div>
   </form>
 </div>
