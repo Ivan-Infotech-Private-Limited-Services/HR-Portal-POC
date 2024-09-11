@@ -36,11 +36,26 @@
         <input (input)="calculateWages()" type="text" formControlName="wageRate" name="wageRate" id="wageRate" placeholder="₹0.00" class="f-control" autocomplete="off">
       </form-field>
     </div>
- 
-    <div class="grid md:grid-cols-3 md:gap-6">
-      <label class="block mb-2 text-md font-medium text-gray-900">Basic (40%): ₹{{earningHeads.basic || '0.00'}}</label>
-      <label class="block mb-2 text-md font-medium text-gray-900">HRA (30%): ₹{{earningHeads.hra || '0.00'}}</label>
-      <label class="block mb-2 text-md font-medium text-gray-900">CA (30%): ₹{{earningHeads.ca || '0.00'}}</label>
+    
+    <div>
+      <div class="text-center pb-2">Earnings</div>
+      <hr class="pb-2">
+      <div class="grid md:grid-cols-3 md:gap-6">
+        <label class="block mb-2 text-md font-medium text-gray-900">Basic (40%): ₹{{earningHeads.basic || '0.00'}}</label>
+        <label class="block mb-2 text-md font-medium text-gray-900">HRA (30%): ₹{{earningHeads.hra || '0.00'}}</label>
+        <label class="block mb-2 text-md font-medium text-gray-900">CA (30%): ₹{{earningHeads.ca || '0.00'}}</label>
+      </div>
+    </div>
+
+
+    <div>
+       <div class="text-center pb-2">Shift Details</div>
+      <hr class="pb-2">
+      <div class="grid md:grid-cols-3 md:gap-6">
+        <label class="block mb-2 text-md font-medium text-gray-900">Shift: Morning Shift</label>
+        <label class="block mb-2 text-md font-medium text-gray-900">Login Time: 10:15 AM</label>
+        <label class="block mb-2 text-md font-medium text-gray-900">Logout Time 07:15 PM</label>
+      </div>
     </div>
 
     <div class="text-center">
