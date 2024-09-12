@@ -61,8 +61,6 @@ export class AddEmployeeComponent implements OnInit {
 
   async create(){
     try {
-      console.log(this.form);
-      
       if(this.form.invalid){
         this.form.markAllAsTouched();
         return

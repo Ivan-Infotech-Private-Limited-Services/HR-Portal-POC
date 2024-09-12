@@ -12,6 +12,8 @@ export class HttpsService {
   constructor(private http: HttpClient) {}
 
   get(url:string, query: any): any {
+    console.log(this.BASE_URL);
+    
     return firstValueFrom(this.http.get<any>(`${this.BASE_URL}/${url}`, {params:query})).catch(this.handleError);
   }
 

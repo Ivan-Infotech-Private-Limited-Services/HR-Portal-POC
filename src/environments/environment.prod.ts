@@ -1,6 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: '/',
-    BASEHREF: '/',
+    apiUrl: 'https://mean.updateapplications.com/hrportalpoc/backend',
   };
   

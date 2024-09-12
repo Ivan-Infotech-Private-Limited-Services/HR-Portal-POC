@@ -15,7 +15,7 @@
           <ngx-select-dropdown formControlName="hodId" [options]="data?.hods" [config]="{search: true, placeholder: 'Choose One', displayKey:'fullName'}" [multiple]="false"></ngx-select-dropdown>
         </div>
       </form-field>
-      <form-field [errorControl]="form.get('userId')" name="user id">
+      <form-field [errorControl]="form.get('userId')" name="card id">
         <label for="userId" class="f-label">Card No.</label>
         <input type="text" formControlName="userId" name="userId" id="userId" placeholder="XX-XXX" class="f-control" autocomplete="off">
       </form-field>

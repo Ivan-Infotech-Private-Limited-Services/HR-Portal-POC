@@ -9,7 +9,7 @@ import { Global } from 'src/app/shared/global';
 @Component({
   selector: 'app-payroll',
   templateUrl: './payroll.component.html',
-  styleUrls: ['./payroll.component.css']
+  styles: [''],
 })
 export class PayrollComponent implements OnInit {
   
@@ -70,8 +70,6 @@ export class PayrollComponent implements OnInit {
 
     if (checkbox) {
       if (checkbox.checked) {
-        console.log(rowId);
-        
         const index = this.unselectedRowIds.indexOf(rowId);
         if (index > -1) {
           this.unselectedRowIds.splice(index, 1);
@@ -80,8 +78,6 @@ export class PayrollComponent implements OnInit {
           this.selectedRowIds.push(rowId);
         }
       } else {
-        console.log(rowId);
-        
         const index = this.selectedRowIds.indexOf(rowId);
         if (index > -1) {
           this.selectedRowIds.splice(index, 1);

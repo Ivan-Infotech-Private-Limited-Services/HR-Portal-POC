@@ -1,12 +1,10 @@
 const mongoose = require("mongoose");
-const port = process.env.DB_PORT
-const dbName = process.env.DB_NAME
 
 module.exports.connect = async() => {
-    console.log(`mongodb://localhost:${port}/${dbName}`);
+    console.log(`mongodb://localhost:${process.env.DB_PORT}/${process.env.DB_NAME}`);
     
-    await mongoose.connect(`mongodb://localhost:${port}/${dbName}`).then(connected =>{
-        console.log("database connected on port", port);
+    await mongoose.connect(`mongodb://localhost:${process.env.DB_PORT}/${process.env.DB_NAME}`).then(connected =>{
+        console.log("database connected on port", process.env.DB_PORT);
     }).catch(e =>{
         console.log(e);
     })

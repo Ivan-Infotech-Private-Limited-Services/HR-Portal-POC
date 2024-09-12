@@ -8,7 +8,7 @@ import { AttendanceService } from 'src/app/services/attendance.service';
 @Component({
   selector: 'app-upload-attendance',
   templateUrl: './upload-attendance.component.html',
-  styleUrls: ['./upload-attendance.component.css'],
+  styles: [''],
 })
 export class UploadAttendanceComponent implements OnInit {
   selectedFile: string = '';

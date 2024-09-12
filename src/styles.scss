@@ -88,3 +88,13 @@ body {
 button:disabled{
  background: rgb(147 197 253) !important;
 }
+
+.ngx-dropdown-container{
+  .ngx-dropdown-list-container{
+    .selected-items{
+      .selected-item{
+        background-color: #1d4ed8 !important;
+      }
+    }
+  }
+}

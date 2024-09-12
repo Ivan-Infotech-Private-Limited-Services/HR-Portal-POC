@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
-  styleUrls: ['./employee.component.css'],
+  styles: [''],
 })
 export class EmployeeComponent implements OnInit {
   employees: any[] = [];

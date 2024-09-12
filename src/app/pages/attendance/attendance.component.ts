@@ -3,7 +3,6 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import * as moment from 'moment';
 import { Global } from 'src/app/shared/global';
-import { CommonFunctionsService } from 'src/app/shared/services/common-functions.service';
 import { UploadAttendanceComponent } from './upload-attendance/upload-attendance.component';
 import { AttendanceService } from 'src/app/services/attendance.service';
 import { ToastrService } from 'ngx-toastr';
@@ -12,7 +11,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-attendance',
   templateUrl: './attendance.component.html',
-  styleUrls: ['./attendance.component.css'],
+  styles: [''],
 })
 export class AttendanceComponent implements OnInit {
   Global = new Global();

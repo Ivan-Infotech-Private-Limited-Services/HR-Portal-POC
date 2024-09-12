@@ -8,7 +8,7 @@ import { Global } from 'src/app/shared/global';
 @Component({
   selector: 'app-attendance-summary',
   templateUrl: './attendance-summary.component.html',
-  styleUrls: ['./attendance-summary.component.css']
+  styles: [''],
 })
 export class AttendanceSummaryComponent implements OnInit {
 

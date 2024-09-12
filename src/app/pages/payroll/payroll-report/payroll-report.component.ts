@@ -2,14 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { AttendanceService } from 'src/app/services/attendance.service';
 import { PayrollService } from 'src/app/services/payroll.service';
 import { Global } from 'src/app/shared/global';
 
 @Component({
   selector: 'app-payroll-report',
   templateUrl: './payroll-report.component.html',
-  styleUrls: ['./payroll-report.component.css']
+  styles: [''],
 })
 export class PayrollReportComponent implements OnInit {
 
